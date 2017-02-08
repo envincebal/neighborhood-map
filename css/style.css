@@ -8,3 +8,20 @@ body{
 #map{
 	height: 100%;
 }
+
+#menu{
+	position: fixed;
+	width: 300px;
+	background-color: #fff;
+	left: 15px;
+  top: 50px;
+  font-family: sans-serif;
+}
+
+.search-box{
+	width: 100%;
+}
+
+#location-list {
+	list-style-type: none;
+}
