@@ -25,7 +25,7 @@ var locations = [
 {
 	title: "Voodoo Doughnuts",
 	address: "22 SW 3rd Ave, Portland, OR 97204",
-	coordinates: {lat: 45.52328, lng: -122.681354},
+	coordinates: {lat: 45.522713, lng: -122.672944},
 },
 {
 	title: "Arlene Schnitzer Concert Hall",
@@ -38,26 +38,43 @@ var locations = [
 	coordinates: {lat: 45.518335, lng: -122.677261},
 }];
 
-function initMap(){
-	 	map = new google.maps.Map(document.getElementById("map"), {
-		center: {lat: 45.519692, lng: -122.680496},
-		zoom: 16
-	});
-}
-
 var markers = [];
 
-for (var i = 0; i < locations.length; i++) {
-	var name = locations[i].title;
-	var position = locations[i].coordinates;
-	var marker = new google.maps.Marker({
-		map: map,
-		position: position,
-		title: name,
-		animation: google.maps.Animation.DROP,
-    id: i
-	})
+function initMap(){
+ 	map = new google.maps.Map(document.getElementById("map"), {
+	center: {lat: 45.519692, lng: -122.680496},
+	zoom: 16
+	});
+	var largeInfoWindow = new google.maps.InfoWindow();
+	var bounds = new google.maps.LatLngBounds();
+	for (var i = 0; i < locations.length; i++) {
+		var name = locations[i].title;
+		var position = locations[i].coordinates;
+		var marker = new google.maps.Marker({
+			map: map,
+			position: position,
+			title: name,
+			animation: google.maps.Animation.DROP,
+	    id: i
+		});
+		markers.push(marker);
+		bounds.extend(marker.position);
+		marker.addListener("click", function(){
+			populateInfoWindow(this, largeInfoWindow);
+		});
+	}
 
+	function populateInfoWindow(marker, infowindow){
+		if (infowindow.marker != marker) {
+			infowindow.marker = marker;
+			infowindow.setContent("<div>" + marker.title + "</div>");
+			infowindow.open(map, marker);
+			infowindow.addListener("closeclick", function(){
+				infowindow.setMarker(null);
+			});
+		}
+		map.fitBounds(bounds);
+	}
 }
 
 // Map View Model
