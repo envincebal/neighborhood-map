@@ -13,9 +13,9 @@
 		<div id="search">
 			<input class="search-box" type="search" placeholder="Search locations">
 		</div>
-		<ul id="location-list">
+		<ul id="location-list" data-bind="foreach:">
 			<li>
-				<a href="#" class="location-points"></a>
+				<a href="#" class="location-points" data-bind="text: name, click: "></a>
 			</li>
 		</ul>
 	</div>

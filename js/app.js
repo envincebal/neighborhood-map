@@ -1,5 +1,3 @@
-var map;
-
 // Locations Model
 var locations = [
 {
@@ -38,22 +36,26 @@ var locations = [
 	coordinates: {lat: 45.518335, lng: -122.677261},
 }];
 
+var map;
 var markers = [];
 
 function initMap(){
- 	map = new google.maps.Map(document.getElementById("map"), {
-	center: {lat: 45.519692, lng: -122.680496},
-	zoom: 16
+	map = new google.maps.Map(document.getElementById("map"), {
+		center: {lat: 45.519692, lng: -122.680496},
+		zoom: 16
 	});
+
 	var largeInfoWindow = new google.maps.InfoWindow();
 	var bounds = new google.maps.LatLngBounds();
 	for (var i = 0; i < locations.length; i++) {
 		var name = locations[i].title;
 		var position = locations[i].coordinates;
+		var address = locations[i].address;
+
 		var marker = new google.maps.Marker({
 			map: map,
 			position: position,
-			title: name,
+			title: "<strong>" + name + "</strong>" + "<br>" + address,
 			animation: google.maps.Animation.DROP,
 	    id: i
 		});
@@ -61,17 +63,31 @@ function initMap(){
 		bounds.extend(marker.position);
 		marker.addListener("click", function(){
 			populateInfoWindow(this, largeInfoWindow);
+
+		 	
 		});
 	}
 
 	function populateInfoWindow(marker, infowindow){
 		if (infowindow.marker != marker) {
-			infowindow.marker = marker;
-			infowindow.setContent("<div>" + marker.title + "</div>");
-			infowindow.open(map, marker);
-			infowindow.addListener("closeclick", function(){
-				infowindow.setMarker(null);
-			});
+
+			var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + name + "&format=json&callback?";
+      //Create ajax request object
+      $.ajax({
+    		type: "GET",
+    		async: false,
+        url: wikiUrl,
+        dataType: "jsonp",
+        success: function(data) {
+          console.log(data);
+          infowindow.open(map, marker);
+					infowindow.addListener("closeclick", function(){
+					infowindow.setMarker(null);
+					});
+
+          infowindow.setContent("<div>" + marker.title + "</div><br><p>" + data[2][0] + "</p>");
+        }
+      });
 		}
 		map.fitBounds(bounds);
 	}
@@ -79,5 +95,6 @@ function initMap(){
 
 // Map View Model
 var ViewModel = function(){
+	var self = this;
 
 }
