@@ -37,6 +37,7 @@ var locations = [
 }];
 
 var map;
+var largeInfoWindow;
 var markers = [];
 
 function initMap(){
@@ -45,53 +46,51 @@ function initMap(){
 		zoom: 16
 	});
 
-	var largeInfoWindow = new google.maps.InfoWindow();
+	largeInfoWindow = new google.maps.InfoWindow();
 	var bounds = new google.maps.LatLngBounds();
 	for (var i = 0; i < locations.length; i++) {
 		var name = locations[i].title;
 		var position = locations[i].coordinates;
 		var address = locations[i].address;
-
+		
 		var marker = new google.maps.Marker({
 			map: map,
 			position: position,
-			title: "<strong>" + name + "</strong>" + "<br>" + address,
+			title: name,
 			animation: google.maps.Animation.DROP,
 	    id: i
 		});
-		markers.push(marker);
+		locations[i].marker = marker;
 		bounds.extend(marker.position);
 		marker.addListener("click", function(){
-			populateInfoWindow(this, largeInfoWindow);
-
-		 	
+			populateInfoWindow(this);
 		});
 	}
+	map.fitBounds(bounds);
+}
 
-	function populateInfoWindow(marker, infowindow){
-		if (infowindow.marker != marker) {
+function populateInfoWindow(marker){
+	if (largeInfoWindow.marker != marker) {
 
-			var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + name + "&format=json&callback?";
-      //Create ajax request object
-      $.ajax({
-    		type: "GET",
-    		async: false,
-        url: wikiUrl,
-        dataType: "jsonp",
-        success: function(data) {
-          console.log(data);
-          infowindow.open(map, marker);
-					infowindow.addListener("closeclick", function(){
-					infowindow.setMarker(null);
-					});
-
-          infowindow.setContent("<div>" + marker.title + "</div><br><p>" + data[2][0] + "</p>");
-        }
-      });
-		}
-		map.fitBounds(bounds);
+		var wikiUrl = "http://en.wikipedia.org/w/api.php?action=opensearch&search=" + marker.title + "&format=json&callback?";
+    //Create ajax request object
+    $.ajax({
+  		type: "GET",
+  		async: false,
+      url: wikiUrl,
+      dataType: "jsonp",
+      success: function(data) {
+        console.log(data);
+        largeInfoWindow.open(map, marker);
+				largeInfoWindow.addListener("closeclick", function(){
+				largeInfoWindow.setMarker(null);
+				});
+	      largeInfoWindow.setContent("<h5>" + marker.title + "</h5><p>" + data[2][0] + "</p><p>" + "Click <a href='" + data[3][0] + "' target='_blank'><strong>HERE</strong></a> for more information on " + marker.title + ".</p>");
+      }
+    });
 	}
 }
+
 
 // Map View Model
 var ViewModel = function(){
