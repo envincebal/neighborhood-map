@@ -40,6 +40,12 @@ var map;
 var largeInfoWindow;
 var markers = [];
 
+var Place = function(data){
+	this.title = ko.observable(data.title);
+	this.address = ko.observable(data.address);
+	this.coordinates = ko.observable(data.coordinates);
+}
+
 function initMap(){
 	map = new google.maps.Map(document.getElementById("map"), {
 		center: {lat: 45.519692, lng: -122.680496},
@@ -57,15 +63,16 @@ function initMap(){
 			map: map,
 			position: position,
 			title: name,
+			address: address,
 			animation: google.maps.Animation.DROP,
 	    id: i
 		});
 		locations[i].marker = marker;
 		bounds.extend(marker.position);
 		marker.addListener("click", function(){
-			populateInfoWindow(this);
+			populateInfoWindow(this);	
 		});
-	}
+	}	
 	map.fitBounds(bounds);
 }
 
@@ -83,10 +90,16 @@ function populateInfoWindow(marker){
         console.log(data);
         largeInfoWindow.open(map, marker);
 				largeInfoWindow.addListener("closeclick", function(){
-				largeInfoWindow.setMarker(null);
+					largeInfoWindow.setMarker(null);
 				});
-	      largeInfoWindow.setContent("<h5>" + marker.title + "</h5><p>" + data[2][0] + "</p><p>" + "Click <a href='" + data[3][0] + "' target='_blank'><strong>HERE</strong></a> for more information on " + marker.title + ".</p>");
+	      largeInfoWindow.setContent("<p><strong>" + marker.title + "</strong><br>" + marker.address + "</p><p>" + data[2][0] + "</p><p>" + "Click <a href='" + data[3][0] + "' target='_blank'><strong>HERE</strong></a> for more information on " + marker.title + ".</p>");
       }
+    }).fail(function(jqXHR, textStatus, errorThrown){
+    		largeInfoWindow.open(map, marker);
+				largeInfoWindow.addListener("closeclick", function(){
+					largeInfoWindow.setMarker(null);
+				});
+	      largeInfoWindow.setContent("<p><strong>" + marker.title + "</strong><br>" + marker.address + "</p><p> Sorry. Could not retrieve data for " + marker.title + ".</p>");
     });
 	}
 }
@@ -96,4 +109,11 @@ function populateInfoWindow(marker){
 var ViewModel = function(){
 	var self = this;
 
+	this.locationList = ko.observableArray([]);
+
+	locations.forEach(function(place){
+			self.locationList.push(new Place(place));
+	})
 }
+
+ko.applyBindings(new ViewModel());
