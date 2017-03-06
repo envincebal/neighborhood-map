@@ -11,11 +11,11 @@
 	<div id="map"></div>
 	<div id="menu">
 		<div id="search">
-			<input class="search-box" type="search" placeholder="Search locations">
+			<input data-bind="value: filter, valueUpdate: 'afterkeydown'" class="search-box" type="search" placeholder="Search locations">
 		</div>
-		<ul id="location-list" data-bind="foreach: locationList">
+		<ul id="location-list" data-bind="foreach: filterLocations">
 			<li class="list-item">
-				<a href="#" class="location-points" data-bind="text: title, click: "></a>
+				<a href="#" class="location-points" data-bind="text: title, click: $parent.listItemClick"></a>
 			</li>
 		</ul>
 	</div>
