@@ -78,7 +78,7 @@ function initMap(){
 		bounds.extend(marker.position);
 		marker.addListener("click", function(){
 			populateInfoWindow(this);
-			clearTimeout(toggleBounce(this), 2000);
+			toggleBounce(this);
 		});
 	}	
 	map.fitBounds(bounds);
@@ -139,7 +139,7 @@ var ViewModel = function(){
 	});
 
 	this.listItemClick = function() {
-		populateInfoWindow();
+		google.maps.event.trigger(this.marker, 'click');
 	}
 
 	this.filterLocations = ko.dependentObservable(function(){
@@ -147,7 +147,6 @@ var ViewModel = function(){
 		return ko.utils.arrayFilter(locations, function(place){
 			return place.title.toLowerCase().indexOf(search) >= 0;
 		});
-		
 	},this); 
 		// You can use this function to loop through locations and filter them
 }
