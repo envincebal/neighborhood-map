@@ -10,7 +10,6 @@ body{
 }
 
 #menu{
-	margin: auto 0;
 	position: fixed;
 	left: 15px;
   top: 50px;
@@ -20,9 +19,38 @@ body{
 
 .search-box{
 	width: 100%;
+	border: 2px solid blue;
+	font-size: 1.5em;
 }
 
-#location-list {
+#location-list{
+	margin: 0px;
 	list-style-type: none;
-	padding: 10px 10px 0 10px;
+	padding: 0px;
+	font-size: 1.5em;
+}
+
+.list-item{
+	border: 2px solid green;
+	padding: 0 10px;
+}
+
+@media screen and (max-width: 767px) {
+	#menu{
+		width: 100%;
+		position: fixed;
+		left: 0px;
+	  top: 340px;
+		background-color: #fff;
+	  font-family: sans-serif;
+	}
+}
+
+@media screen and (max-width: 500px) {
+	#location-list{
+		margin: 0px;
+		list-style-type: none;
+		padding: 0px;
+		font-size: 1.2em;
+	}
 }
