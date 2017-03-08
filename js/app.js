@@ -40,16 +40,9 @@ var map;
 var largeInfoWindow;
 var markers = [];
 
-// This constructor's properties are tied to observables that automatically update
-var Place = function(data){
-	this.title = ko.observable(data.title);
-	this.address = ko.observable(data.address);
-	this.coordinates = ko.observable(data.coordinates);
-}
-
 // Renders Google Maps and location markers onto browser
 function initMap(){
-	map = new google.maps.Map(document.getElementById("map"), {
+	map = new google.maps.Map(document.querySelector(".map"), {
 		center: {lat: 45.519692, lng: -122.680496},
 		zoom: 16,
 		mapTypeControl: false
@@ -102,6 +95,8 @@ function toggleBounce(marker) {
 
 // Populates info window with relevant details
 function populateInfoWindow(marker){
+	var self = this;
+	
 	if (largeInfoWindow.marker != marker) {
 		largeInfoWindow.marker = marker;
 		
@@ -111,8 +106,14 @@ function populateInfoWindow(marker){
 
 		// Wikipedia endpoint
 		var wikiUrl = "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + marker.title + "&format=json&callback?";
-    // Creates ajax request object
-    $.ajax({
+		
+    // Displays error message if unable to retrieve AJAX data after 5 seconds
+    this.apiTimeout = setTimeout(function(){
+    	alert("ERROR: Failed to load data");
+  	}, 5000);
+
+			// Creates ajax request object
+    	$.ajax({
   		type: "GET",
   		async: false,
       url: wikiUrl,
@@ -127,6 +128,8 @@ function populateInfoWindow(marker){
 
 				// Appends Wikipedia content and locations array data into info window
 	      largeInfoWindow.setContent("<p><strong>" + marker.title + "</strong><br>" + marker.address + "</p><p>" + data[2][0] + "</p><p>" + "Click <a href='" + data[3][0] + "' target='_blank'><strong>HERE</strong></a> for more information on " + marker.title + ".</p>");
+
+	      clearTimeout(self.apiTimeout);
       }
     }).fail(function(jqXHR, textStatus, errorThrown){
 			largeInfoWindow.addListener("closeclick", function(){
@@ -135,7 +138,7 @@ function populateInfoWindow(marker){
 
 			// If AJAX call fails, an error is appended to info window instead
       largeInfoWindow.setContent("<p><strong>" + marker.title + "</strong><br>" + marker.address + "</p><p> Sorry. Could not retrieve data for " + marker.title + ".</p>");
-    });
+    });    
 	}
 }
 
@@ -153,6 +156,9 @@ var ViewModel = function(){
 	// This ko.dependentObservable function will return and filter out list view items to match search input
 	this.filterLocations = ko.dependentObservable(function(){
 		var search = this.filter().toLowerCase();
+		if (largeInfoWindow) {
+      largeInfoWindow.close();
+    }
 		return ko.utils.arrayFilter(locations, function(place){
 			if (place.title.toLowerCase().indexOf(search) >= 0){
 				// check if the marker exists and sets markers to visible if true
@@ -172,4 +178,6 @@ var ViewModel = function(){
 }
 
 // Applies binding to new View Model object
-	ko.applyBindings(new ViewModel());
+ko.applyBindings(new ViewModel());
+
+initMap();

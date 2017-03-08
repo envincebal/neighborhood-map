@@ -4,16 +4,16 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Neighborhood Map</title>
-	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-	<div id="map"></div>
-	<div id="menu">
-		<div id="search">
+	<div class="map"></div>
+	<div class="menu">
+		<div class="search">
 			<input data-bind="value: filter, valueUpdate: 'afterkeydown'" class="search-box" type="search" placeholder="Search locations">
 		</div>
-		<ul id="location-list" data-bind="foreach: filterLocations">
+		<ul class="location-list" data-bind="foreach: filterLocations">
 			<li class="list-item">
 				<a href="#" class="location-points" data-bind="text: title, click: $parent.listItemClick"></a>
 			</li>
