@@ -110,7 +110,7 @@ function populateInfoWindow(marker){
 		largeInfoWindow.setContent('Loading...');
 
 		// Wikipedia endpoint
-		var wikiUrl = "http://en.wikipedia.org/w/api.php?action=opensearch&search=" + marker.title + "&format=json&callback?";
+		var wikiUrl = "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + marker.title + "&format=json&callback?";
     // Creates ajax request object
     $.ajax({
   		type: "GET",
